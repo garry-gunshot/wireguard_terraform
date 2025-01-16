@@ -2,6 +2,10 @@
 Fast and easy way to setup WireGuard on AWS using terraform.
 Based on [wg-easy](https://github.com/wg-easy/wg-easy)
 
+WireGuard® is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography. 
+It aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding the massive headache. 
+It intends to be considerably more performant than OpenVPN. 
+
 ## Requirements
 * Terraform with version 1.0.0 and above
 * AWS credentials. Default location: ~/.aws/credentials
@@ -38,3 +42,12 @@ These options can be configured by passing variables to module "vpn"
 | `web_ui_language` | en | Web UI language. The value must be one of the following: en, ua, tr, no, pl, fr, de, ca, es, ko, vi, nl, is, pt, chs, cht, it, th, hi, ja, si                                 |
 | `instance_type` | t3.nano | EC2 instance type                                    |
 | `ec2_username` | admin | Default username for debian based AWS AMI. May diffres for any other distributions                                      |
+
+By default VPN server runs in European region (Ireland). To setup it in another region update aws provider of module with provider alias defined in [provider.tf](https://github.com/garry-gunshot/wireguard_terraform/blob/main/provider.tf).
+
+module "vpn" {
+  providers = {
+    aws = **aws.eu_west_1**
+  }
+...
+}

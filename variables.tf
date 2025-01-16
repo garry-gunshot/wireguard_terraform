@@ -3,6 +3,7 @@ variable "wg_admin_password" {
   type = string
 }
 
+
 ## Outputs
 output "web_ui" {
   value = module.vpn.web_ui
