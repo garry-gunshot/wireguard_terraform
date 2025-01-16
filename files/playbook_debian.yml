@@ -1,0 +1,100 @@
+---
+- name: Ansible apt module example
+  hosts: all
+  become: true
+  tasks:  
+  
+  - name: Install required dependencies for Docker
+    tags: common
+    apt:
+      name: 
+        - ca-certificates
+        - curl
+      state: latest
+      update_cache: true
+
+  - name: Create /etc/apt/keyrings directory
+    ansible.builtin.file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
+
+  - name: Download Docker GPG key to /etc/apt/keyrings/docker.asc
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/debian/gpg
+      dest: /etc/apt/keyrings/docker.asc
+      mode: '0644'
+
+  - name: Ensure the GPG key has correct permissions
+    ansible.builtin.file:
+      path: /etc/apt/keyrings/docker.asc
+      mode: '0644'
+
+  - name: Add Docker repository to sources list
+    ansible.builtin.shell:
+      cmd: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      creates: /etc/apt/sources.list.d/docker.list
+      warn: false
+
+  - name: Update apt cache after adding Docker repository
+    ansible.builtin.apt:
+      update_cache: yes
+
+  - name: Install Docker
+    apt:
+      name: 
+        - docker-ce 
+        - docker-ce-cli 
+        - containerd.io 
+        - docker-buildx-plugin 
+        - docker-compose-plugin
+        - python3-docker
+      state: latest
+      update_cache: true    
+
+  - name: Start and enable Docker service
+    ansible.builtin.systemd:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Verify Docker installation
+    ansible.builtin.command:
+      cmd: docker --version
+    register: docker_version
+    changed_when: false
+
+  - name: Display Docker version
+    ansible.builtin.debug:
+      msg: "Docker version: {{ docker_version.stdout }}"
+      
+  - name: Obtain public IP
+    ansible.builtin.command:
+      cmd: curl -s http://169.254.169.254/latest/meta-data/public-ipv4
+    register: public_ip 
+
+  - name: Run wireguard container using docker_container module
+    community.docker.docker_container:
+      name: wg-easy
+      image: "{{ wg_docker_image }}"
+      state: started
+      restart_policy: unless-stopped
+      detach: yes
+      env:
+        LANG: "{{ web_ui_language }}"
+        WG_HOST: "{{ public_ip.stdout }}"
+        PASSWORD_HASH: "{{ wg_admin_password }}"
+        PORT: "{{ web_ui_port }}"
+        WG_PORT: "{{ wg_port }}"
+      volumes:
+        - "~/.wg-easy:/etc/wireguard"
+      published_ports:
+        - "{{ wg_port }}:{{ wg_port }}/udp"
+        - "{{ web_ui_port }}:{{ web_ui_port }}/tcp"
+      capabilities:
+        - NET_ADMIN
+        - SYS_MODULE
+      sysctls:
+        net.ipv4.conf.all.src_valid_mark: "1"
+        net.ipv4.ip_forward: "1"
