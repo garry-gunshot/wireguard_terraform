@@ -47,7 +47,7 @@ By default VPN server runs in European region (Ireland). To setup it in another 
 ```shell
 module "vpn" {
   providers = {
-    aws = aws.eu_west_1
+    aws = **aws.eu_west_1**
   }
 ...
 }
