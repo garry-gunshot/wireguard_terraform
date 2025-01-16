@@ -44,11 +44,10 @@ These options can be configured by passing variables to module "vpn"
 | `ec2_username` | admin | Default username for debian based AWS AMI. May diffres for any other distributions                                      |
 
 By default VPN server runs in European region (Ireland). To setup it in another region update aws provider of module with provider alias defined in [provider.tf](https://github.com/garry-gunshot/wireguard_terraform/blob/main/provider.tf).
-```shell
+
 module "vpn" {
   providers = {
     aws = **aws.eu_west_1**
   }
 ...
 }
-```
