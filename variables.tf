@@ -1,6 +1,6 @@
 variable "wg_admin_password" {
   description = "Admin password for wireguard Web UI"
-  type = string
+  type        = string
 }
 
 

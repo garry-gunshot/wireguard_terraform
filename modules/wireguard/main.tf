@@ -1,6 +1,6 @@
 module "ec2" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
-  version                     = "5.7.1"
+  version                     = "6.3.0"
   name                        = var.service_name
   ami                         = data.aws_ami.debian.id
   instance_type               = var.instance_type
@@ -24,11 +24,11 @@ resource "time_sleep" "wait_15_seconds" {
 
 resource "ansible_playbook" "playbook" {
   depends_on = [
-    module.ec2, 
+    module.ec2,
     time_sleep.wait_15_seconds
-    ]
-  playbook   = var.playbook_file
-  name       = module.ec2.public_dns
+  ]
+  playbook = var.playbook_file
+  name     = module.ec2.public_dns
   extra_vars = {
     ansible_hostname             = module.ec2.public_dns
     ansible_user                 = var.ec2_username,
@@ -38,6 +38,7 @@ resource "ansible_playbook" "playbook" {
     web_ui_language              = var.web_ui_language
     web_ui_port                  = var.web_ui_port
     wg_port                      = var.wg_port
+    wg_insecure_env              = true
 
   }
   replayable = true

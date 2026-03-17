@@ -1,7 +1,7 @@
 variable "service_name" {
   description = "Name of the service"
-  type    = string
-  default = "wireguard"
+  type        = string
+  default     = "wireguard"
 }
 
 variable "tags" {
@@ -14,13 +14,13 @@ variable "tags" {
 
 variable "wg_admin_password" {
   description = "Admin password for wireguard Web UI"
-  type = string
+  type        = string
 }
 
 variable "ec2_username" {
   description = "Default username for debian based AWS AMI. May diffres for any other distributions"
-  type    = string
-  default = "admin"
+  type        = string
+  default     = "admin"
 }
 
 variable "instance_type" {
@@ -46,25 +46,25 @@ variable "ssh_private_key" {
 
 variable "wg_docker_image" {
   type    = string
-  default = "ghcr.io/wg-easy/wg-easy:14"
+  default = "ghcr.io/wg-easy/wg-easy:15"
 }
 
 variable "restricted_web_ui" {
   description = "If set to true wireguard web ui page will be reachable from your external ip address only. By default it is reachable from everywhere"
-  type    = bool
-  default = "false"
+  type        = bool
+  default     = "false"
 }
 
 variable "restricted_ssh" {
   description = "If set to true wireguard web ui page will be reachable from your external ip address only. By default it is reachable from everywhere"
-  type    = bool
-  default = "false"
+  type        = bool
+  default     = "false"
 }
 
 variable "web_ui_language" {
-  description = "Web UI language" 
-  type    = string
-  default = "en"
+  description = "Web UI language"
+  type        = string
+  default     = "en"
   validation {
     condition     = contains(["en", "ua", "tr", "no", "pl", "fr", "de", "ca", "es", "ko", "vi", "nl", "is", "pt", "chs", "cht", "it", "th", "hi", "ja", "si"], var.web_ui_language)
     error_message = "The value must be one of the following: en, ua, tr, no, pl, fr, de, ca, es, ko, vi, nl, is, pt, chs, cht, it, th, hi, ja, si."
@@ -97,6 +97,10 @@ variable "wg_inbound_cidr" {
   default = "0.0.0.0/0"
 }
 
+variable "wg_insecure_env" {
+  type    = bool
+  default = false
+}
 
 ## Outputs
 output "web_ui" {

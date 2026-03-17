@@ -35,7 +35,7 @@
       cmd: |
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
       creates: /etc/apt/sources.list.d/docker.list
-      warn: false
+      # warn: false
 
   - name: Update apt cache after adding Docker repository
     ansible.builtin.apt:
@@ -82,13 +82,10 @@
       restart_policy: unless-stopped
       detach: yes
       env:
-        LANG: "{{ web_ui_language }}"
-        WG_HOST: "{{ public_ip.stdout }}"
-        PASSWORD_HASH: "{{ wg_admin_password }}"
-        PORT: "{{ web_ui_port }}"
-        WG_PORT: "{{ wg_port }}"
+        INSECURE: "{{ wg_insecure_env }}"
       volumes:
-        - "~/.wg-easy:/etc/wireguard"
+        - "etc_wireguard:/etc/wireguard"
+        - "/lib/modules:/lib/modules:ro"
       published_ports:
         - "{{ wg_port }}:{{ wg_port }}/udp"
         - "{{ web_ui_port }}:{{ web_ui_port }}/tcp"

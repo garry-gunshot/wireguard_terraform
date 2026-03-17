@@ -3,11 +3,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.46.0"
+      version = "6.36.0"
     }
     http = {
       source  = "hashicorp/http"
-      version = "3.4.5"
+      version = "3.5.0"
     }
   }
 }
